@@ -1,6 +1,6 @@
 import igraph
 import numpy as np
-from .utils import get_grabriel_graph
+from .utils import get_gabriel_graph, draw_graph_partition, generate_partition
 
 
 class Single_Instance_Generator:
@@ -41,28 +41,28 @@ class Single_Instance_Generator:
         # Initialize an empty graph with N nodes
         self.graph: igraph.Graph = igraph.Graph(self.N)
 
+
     def generate_points(self) -> np.ndarray:
         """ 
         Uniformly sample points from the unit square [0, 1]^2.
         """
         return np.random.rand(self.N, 2)
+    
 
-    def generate_grabirel_graph(self):
-        """ 
-        Creates a Gabriel graph from 2D points.
-        Adds 'pos' as a graph attribute and 'name' as a vertex attribute.
+    def draw_partition(self, node_size: int = 100, with_labels = False):
+        """  
+        Draw the graph with its partition
         """
-        # Sample points  
-        points: np.ndarray = self.generate_points()
+        # check that it has a partition and 
+        if "P" not in self.graph.attributes() or "pos" not in self.graph.attributes():
+            print("First create a partition")
+            return
+        # Draw the graph, with the partition
+        draw_graph_partition(self.graph, P = self.graph["P"], pos = self.graph["pos"],
+                            node_size=node_size, with_labels=with_labels)
 
-        # Get Gabriel graph
-        self.graph = get_grabriel_graph(points)
 
-        # Save 'pos' and 'name' attributes
-        self.graph["pos"] = {i: (float(x), float(y)) for i, (x, y) in enumerate(points)}
-        self.graph.vs["name"] = [str(i) for i in range(self.N)]
-
-    def generate_graph(self):
+    def generate_instance(self):
         """ 
         Main function.
         Generates a graph instance for the p-regions problem.
@@ -72,4 +72,13 @@ class Single_Instance_Generator:
             np.random.seed(self.seed)
 
         # Generate graph using 2D points
-        self.generate_grabirel_graph()
+        points: np.ndarray = self.generate_points()
+        self.graph = get_gabriel_graph(points)
+        self.graph["pos"] = {i: (float(x), float(y)) for i, (x, y) in enumerate(points)}
+        self.graph.vs["name"] = [str(i) for i in range(self.N)]
+
+        # Generate a partition in K regions
+        P: dict[int, list[int]] = generate_partition(self.graph, self.K)
+        self.graph["P"] = P
+
+        # Generate production vectors
