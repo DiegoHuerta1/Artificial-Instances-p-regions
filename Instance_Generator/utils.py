@@ -237,3 +237,19 @@ def draw_graph_partition(graph: igraph.Graph, P: dict,
     plt.tight_layout()
     plt.show()
     plt.close()
+
+# --------------------------------------------------------
+# Extra
+
+def compute_cluster_labels_from_P(P: dict[int, list[int]], num_units: int) -> np.ndarray:
+    """  
+    Given a partition P of n elements (0, ..., n-1), of the form
+    {1: P_1, 2: P_2, ...} (regions starting at 1),
+    obtain a vector of cluster labels (with regions indices starting at 0)
+    """
+    labels = np.ones(num_units) * -1
+    for k, P_k in P.items():
+        labels[P_k] = k - 1 # start with index 0, not 1
+    return labels
+
+

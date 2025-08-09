@@ -1,6 +1,7 @@
 import igraph
 import numpy as np
-from .utils import get_gabriel_graph, draw_graph_partition, generate_partition
+from .utils import get_gabriel_graph, draw_graph_partition, generate_partition, compute_cluster_labels_from_P
+from .k_means_optimality import get_k_means_optimality_status
 
 
 class Single_Instance_Generator:
@@ -62,6 +63,21 @@ class Single_Instance_Generator:
                             node_size=node_size, with_labels=with_labels)
 
 
+    def get_alpha_parameters(self) -> dict[int, np.ndarray]:
+        """  
+        Get the parameter alpha_k for each region k
+        """
+        # Useful variables
+        identity = np.eye(self.L)
+        ones = np.ones(self.L)
+
+        # Complete for each region: αk = 1 + βek
+        parameters = {}
+        for k in range(self.K):
+            parameters[k+1] = ones + self.beta * identity[k]
+        return parameters
+
+
     def generate_instance(self):
         """ 
         Main function.
@@ -81,4 +97,21 @@ class Single_Instance_Generator:
         P: dict[int, list[int]] = generate_partition(self.graph, self.K)
         self.graph["P"] = P
 
-        # Generate production vectors
+        # Generate node attribures for each node
+        alpha_parameters: dict[int, np.ndarray] = self.get_alpha_parameters()
+        for k, P_k in P.items():
+            self.graph.vs[P_k]["x"] = np.random.dirichlet(alpha_parameters[k], size = len(P_k))
+
+        # Compute optimality status
+        X = np.array(self.graph.vs["x"])
+        cluster_labels = compute_cluster_labels_from_P(P, self.N) 
+        status: str = get_k_means_optimality_status(X, self.K, cluster_labels)
+        self.graph["status"] = status
+
+
+    def save_instance(self, output_path):
+        """ 
+        Save the graph instance as a pickle file
+        """
+        with open(output_path, "wb") as f:
+            self.graph.write_pickle(f)
