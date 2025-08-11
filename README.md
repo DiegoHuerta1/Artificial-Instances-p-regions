@@ -20,6 +20,9 @@ Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/DiegoHuerta1/Artificial-Instances-p-regions.git
 cd Artificial-Instances-p-regions
+python -m venv venv
+.\venv\Scripts\activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
@@ -64,6 +67,7 @@ The generated instance is returned as an `igraph.Graph` object with the followin
 ---
 
 **Author:** Diego Huerta  
+
 
 
 
