@@ -15,16 +15,30 @@ This library helps researchers and students generate **synthetic data** to test 
 
 ## Installation
 
-Clone the repository and install dependencies:
+Follow these steps to set up a local development environment.
 
-```bash
-git clone https://github.com/DiegoHuerta1/Artificial-Instances-p-regions.git
-cd Artificial-Instances-p-regions
-python -m venv venv
-.\venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
+1. **Clone the repository**
+   
+   ``` bash
+   git clone https://github.com/DiegoHuerta1/Artificial-Instances-p-regions.git
+   cd Artificial-Instances-p-regions
+   ```
+
+3. **Create and activate a virtual environment**
+
+   
+   ```bash
+   python -m venv venv
+   .\venv\Scripts\activate
+   ```
+
+
+4. **Upgrade pip and install dependencies**
+   
+   ```bash
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
 
 ---
 
@@ -67,6 +81,7 @@ The generated instance is returned as an `igraph.Graph` object with the followin
 ---
 
 **Author:** Diego Huerta  
+
 
 
 
